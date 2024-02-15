@@ -3,44 +3,55 @@ import FeedbackOptions from './FeedbackOptions';
 import Statistics from './Statistics';
 import Section from './Section';
 import Notification from './Notification';
-import styles from './App.module.css';
 
 const App = () => {
-  const [feedback, setFeedback] = useState({ good: 0, neutral: 0, bad: 0 });
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
 
   const handleFeedback = type => {
-    setFeedback(prevFeedback => ({
-      ...prevFeedback,
-      [type]: prevFeedback[type] + 1,
-    }));
+    switch (type) {
+      case 'good':
+        setGood(good + 1);
+        break;
+      case 'neutral':
+        setNeutral(neutral + 1);
+        break;
+      case 'bad':
+        setBad(bad + 1);
+        break;
+      default:
+        break;
+    }
   };
 
-  const countTotalFeedback = () => {
-    return feedback.good + feedback.neutral + feedback.bad;
-  };
+  const countTotalFeedback = () => good + neutral + bad;
 
   const countPositiveFeedbackPercentage = () => {
     const total = countTotalFeedback();
-    return total ? Math.round((feedback.good / total) * 100) : 0;
+    return total ? Math.round((good / total) * 100) : 0;
   };
 
   return (
-    <div className={styles.container}>
+    <div>
       <Section title="Please leave feedback">
-        <FeedbackOptions onLeaveFeedback={handleFeedback} />
+        <FeedbackOptions
+          options={['good', 'neutral', 'bad']}
+          onLeaveFeedback={handleFeedback}
+        />
       </Section>
 
       <Section title="Statistics">
-        {countTotalFeedback() > 0 ? (
+        {countTotalFeedback() === 0 ? (
+          <Notification message="No feedback given" />
+        ) : (
           <Statistics
-            good={feedback.good}
-            neutral={feedback.neutral}
-            bad={feedback.bad}
+            good={good}
+            neutral={neutral}
+            bad={bad}
             total={countTotalFeedback()}
             positivePercentage={countPositiveFeedbackPercentage()}
           />
-        ) : (
-          <Notification message="There is no feedback" />
         )}
       </Section>
     </div>
